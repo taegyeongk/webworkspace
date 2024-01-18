@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        .blue {
+            color: rgb(143, 223, 255);
+        }
+
+        .red {
+            color: rgb(255, 172, 222);
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>Where do you want to go?</h1>
+        <h2>Travel Destinations</h2>
+        <p>Plan your next adventure.</p>
+        <ul id="destinations">
+            <li>Rome</li>
+            <li>Paris</li>
+            <li class="blue">Rio</li>
+
+        </ul>
+    </div>
+    <script>
+        //css는 속성값을 변경하는 메소드로 현재 사용된다. 배열에 관해서 동일하게 스타일을 먹임. 제이쿼리는 한번에 객체내부에 들어가 있는 모든 태그에 대해 동일한 이벤트 속성을 처리할 수 있다.
+        //selector : 탐색
+        // # : id 속성 
+        console.log($('#destinations'));
+        // . : class 속성
+        console.log($('.blue'));
+        // tagName
+        console.log($('h1'));
+        //[attribute] : 일반속성
+        console.log($('[name]'));
+        //관계를 기반으로 
+        console.log($('ul > li'));
+
+        /*
+            innerHtml : html()
+            textContent : text()
+            class : addClass(), removeClass(), 
+                    hasClass((), toggleClass()   has : 내가 원하는 클래스 값이 있는지를 찾음, toggle : 내가 현재 가지고 있는 값을 클래스가 가지고 있으면 추가, 없으면 삭제하는 형태
+            value : val()
+            style : css() : 기존에 있던 태그와는 다르게 사용된다. 
+            기타 : prop() , attr() : 속성을 다룬다는 공통점을 가진다. 간혹 prop동작이 되지 않기때문에 경우에 따라 사용 여부가 달라진다.
+        */
+
+        let result = $('ul').html(); //하위요소인 <li>태그까지 정보가 전체 담겨있다.
+        console.log(result);
+        result = $('ul').text(); //text 속성에 대한 값만 나타남
+        console.log(result);
+        $('h1').text('Hello, jQuery!!');
+        $('h2').css('background-color', 'green');
+        result = $('h2').css('color');
+        console.log(result);
+        $('p').prop('name', 'dumi');
+
+
+    </script>
+</body>
+
+</html>

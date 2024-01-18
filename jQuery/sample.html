@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jQuery</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <style>
+    .selected {
+      background-color: goldenrod;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .left {
+      text-align: left;
+    }
+
+    .blue {
+      background-color: skyblue;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .emphasis {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <button type="button" id="insertBtn">+</button>
+    <select>
+      <option>일반</option>
+      <option>VIP</option>
+    </select>
+    <table id="list">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="allChk" /></th>
+          <th>No.</th>
+          <th>구분</th>
+          <th>아이디</th>
+          <th>비밀번호</th>
+          <th>이름</th>
+          <th>가입날짜</th>
+          <th>Del</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="selected">
+          <td><input type="checkbox" /></td>
+          <td>001</td>
+          <td>일반</td>
+          <td name="id">user01</td>
+          <td><input type="password" value="1234"></td>
+          <td>
+            <p>한지수</p>
+          </td>
+          <td>2023-10-31</td>
+          <td><button type="button">Del</button></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>002</td>
+          <td>VIP</td>
+          <td name="id">user99</td>
+          <td><input type="password" value="9999"></td>
+          <td>
+            <p id="here">강호동</p>
+          </td>
+          <td>2023-11-11</td>
+          <td><button type="button">Del</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    //1) 헤더를 구성하는 항목 => 별도의 배열
+    let headList = $('th');
+    headList = $('#list thead th'); //#list : 확실하게 고정이되는 값 , '>' 가 붙으면 데이터를 가져오지 못하게 된다.
+    let headAry = [];
+    headList.each((idx, tag) => {
+      // javascript 
+      console.log(tag.textContent);
+      //jQuery 객체로 다시 변환 
+      console.log($(tag).text());
+
+      let value = null;
+      if (idx == 0) {
+        value = $(tag).children().attr('type'); //children : 태그가 가지고있는 해당 하위 요소를 가지고 오는것
+      } else {
+        value = tag.textContent;
+      }
+
+      headAry.push(value);
+      console.log(headAry);
+
+      // 속성을 기반으로 관계를 찾아가는 방법
+      // 2) 특정 속상 값만 사용
+      console.log($('#here'));
+      console.log($('.selected'));
+      console.log($(["name] = id"]));
+
+      //복합 선택자 id속성이 here 인 태그를 하위요소로 두는 tr태그
+      //3-1)
+      //children: 태그가 가지고있는 해당요소를 가지고 오는것
+      //closest: 가장 가까운 상위요소 찾을 때 사용한다
+      console.log($('#here').parent().parent());
+      console.log($('#here').closest('tr'));
+      //3-2)
+      console.log($('tr:has(#here)'));
+    });
+  </script>
+  <script>
+    console.clear();
+    //자바스크립트 방식
+    let jsPwd = document.getElementById('here').parentElement //td > p#here
+      .previousElementSibling //td > input:password
+      .firstElementChild //input:password
+      .value;
+
+
+
+    //제이쿼리 방식
+    let jqPwd = $('#here')
+      .parent()
+      .prev()
+      .children().first()
+      .val();
+    console.log(jsPwd, jqPwd);
+
+    $('input[type="password"]').prop('type', 'text'); //공백이 들어가면 원하는 결과값이 나오지 않는다.
+    $('#list, #list *').not('input,p').css('border', '1px solid black'); //, 는 그룹선택자
+  </script>
+  <script>
+    /* 제이쿼리 이벤트 on('event', function(event){
+      field ) target, currentTarget
+      method ) preventDefault(), stopPropagation()
+    }); 위의 field 와 method 는 각 기능 알고 있어야한다.
+    */
+     document.querySelectorAll('#list tbody > tr').forEach(trTag =>{
+       trTag.addEventListener('click', function(event){
+    //       event.currentTarget.classList.toggle('selected');
+       })
+     });
+
+    $('#list tbody > tr').on('click', function (event) {
+      $(event.currentTarget).toggleClass('selected');
+    });
+
+
+    // Del 버튼에 click 이벤트
+    $('tbody button:contains(Del)').on('click', function (
+    event) { //contains : css 에도 존재하지 않는 선택자 text 속성이 가지고 있는 값에 더 빠르게 접근
+      event.stopPropagation(); //이전 이벤트는 버튼을 클릭해도 실행되지않는다.
+      //1) 선택한 tr을 복사해서 맨 마지막 줄에 추가(아랫줄로 이동과 같은 개념)
+      let selectedTr = $(event.currentTarget).closest('tr');
+      let cloneTr = selectedTr.clone(); //clone : 선택한 tr을 모두 복사
+      $('#list tbody').append(cloneTr);
+      //2) 선택한 tr을 삭제
+      selectedTr.remove();
+      //selectedTr.empty();
+    })
+
+    // select 태그에 change 이벤트
+    $('select').on('change', function (event) {
+      let trTag = $('<tr></tr'); //문자열로 원하는 태그를 생성시 <>사용
+      
+      let tdTag = $('<td/>');
+      let inputTag = $('<input type="checkbox"/>'); //태그가가지고 있는 속성까지 같이 해주면 됨.
+      tdTag.append(inputTag);
+      trTag.append(tdTag);
+      
+      tdTag = $('<td/>').text('003');
+      trTag.append(tdTag);
+      ////////////////////////////////////
+      
+      tdTag = $('<td/>').text(event.currentTarget.value);
+      trTag.append(tdTag);
+      
+      tdTag = $('<td/>').attr('name', 'id').text('user03');
+      trTag.append(tdTag);
+
+      tdTag = $('<td/>').append($('<input/>').attr('type', 'password').val(5555));
+      trTag.append(tdTag);
+      
+      tdTag = $('<td><p>이한나</p></td>');
+      trTag.append(tdTag);
+
+      tdTag = $('<td></td>').text('2024-01-17');
+      trTag.append(tdTag);
+
+      tdTag = $('<td/>');
+      let btnTag = $('<button/>').attr('type', 'button').text('Del');
+      tdTag.append(btnTag);
+      trTag.append(tdTag);
+
+      console.log(trTag);
+      $('#list tbody').append(trTag);  //-> 주석처리하면 데이터는 있으나 화면에는 보이지않음 append를 해줘야 출력되기 때문
+
+    });
+
+    // 전체 선택 시 이벤트 처리
+    $('#allChk').on('click', function(event){
+      let result = event.currentTarget.checked;
+      $(':checkbox').prop('checked', result);
+    })
+
+
+
+  </script>
+</body>
+
+</html>
